@@ -7,10 +7,10 @@
 #include <vector>
 
 #include "appUtils.h"
-#include "appLifeCycle.h"
+#include "VulkanGraphics.h"
 
-AppInitializer::AppInitializer(struct android_app *app) :
-        app(app), vkPhysicalDevice(VK_NULL_HANDLE), vkInstance(VK_NULL_HANDLE) {
+VulkanGraphics::VulkanGraphics(ANativeWindow *nativeWindow) : nativeWindow(nativeWindow) {
+
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.pEngineName = NULL;
@@ -18,14 +18,8 @@ AppInitializer::AppInitializer(struct android_app *app) :
     appInfo.apiVersion = VK_API_VERSION_1_0;
 
     // For scaling up
-    ANativeWindow_setBuffersGeometry(app->window, 1024, 768, 0);
-}
+    ANativeWindow_setBuffersGeometry(nativeWindow, 1024, 768, 0);
 
-void AppInitializer::setApplicationName(const char *name) {
-    this->appInfo.pApplicationName = name;
-}
-
-uint8_t AppInitializer::doInit() {
 
     VkInstanceCreateInfo createInfo = {};
     memset((char *) &createInfo, 0, sizeof(VkInstanceCreateInfo));
@@ -35,7 +29,7 @@ uint8_t AppInitializer::doInit() {
 
     if (vkCreateInstance(&createInfo, nullptr, &vkInstance) != VK_SUCCESS) {
         LOGW("Failed to create vulkan instance");
-        return 1;
+        throw "Failed to create vulkan instance";
     } else {
         LOGI("Vulkan instance created");
     };
@@ -44,11 +38,28 @@ uint8_t AppInitializer::doInit() {
     createLogicalDevices();
     createSurface();
 
-    return 0;
 }
 
+VulkanGraphics::~VulkanGraphics() {
+    vkDestroySurfaceKHR(vkInstance, *screenSurface, nullptr);
+    delete screen;
+    vkDestroyInstance(vkInstance, nullptr);
+}
 
-void AppInitializer::doSelectPhyDevice() {
+void VulkanGraphics::createLogicalDevices() {
+    screen = new VulkanLogicDevice(vkPhysicalDevice);
+    screen->setNumberOfComputeQueues(1);
+    screen->setNumberOfGraphicsQueues(1);
+
+    uint8_t result = screen->createVkLogicalDevice();
+    if (result != 0) {
+        LOGW("Failed to apply logic device changes: %d", result);
+        return;
+    }
+
+}
+
+void VulkanGraphics::doSelectPhyDevice() {
     // Get the list of physical devices
     uint32_t devCount = 1;
     if (VK_SUCCESS != vkEnumeratePhysicalDevices(vkInstance, &devCount, NULL) || devCount == 0) {
@@ -77,54 +88,14 @@ void AppInitializer::doSelectPhyDevice() {
     }
 }
 
-void AppInitializer::createLogicalDevices() {
-
-    screen = new VulkanLogicDevice(vkPhysicalDevice);
-    screen->setNumberOfComputeQueues(1);
-    screen->setNumberOfGraphicsQueues(1);
-
-    uint8_t result = screen->createVkLogicalDevice();
-    if (result != 0) {
-        LOGW("Failed to apply logic device changes: %d", result);
-        return;
-    }
-}
-
-void AppInitializer::createSurface() {
-
+void VulkanGraphics::createSurface() {
     VkAndroidSurfaceCreateInfoKHR createInfoKHR;
     createInfoKHR.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-    createInfoKHR.window = app->window;
+    createInfoKHR.window = nativeWindow;
     createInfoKHR.pNext = nullptr;
 
-    if (vkCreateAndroidSurfaceKHR(this->vkInstance, &createInfoKHR, nullptr, screenSurface) != VK_SUCCESS) {
+    if (vkCreateAndroidSurfaceKHR(vkInstance, &createInfoKHR, nullptr, screenSurface) != VK_SUCCESS) {
         LOGW("Failed to create surface");
         return;
-    }
-}
-
-AppTerminator::AppTerminator(android_app *androidApp, application *thisApp) :
-        androidApp(androidApp), thisApp(thisApp) {
-
-}
-
-void AppTerminator::doTerminate() {
-    if (thisApp->screenSurface != nullptr) {
-        vkDestroySurfaceKHR(thisApp->vkInstance, *thisApp->screenSurface, nullptr);
-    } else {
-        LOGW("screen surface is already destroyed");
-    }
-
-    if (thisApp->screen != nullptr) {
-        delete thisApp->screen;
-    } else {
-        LOGW("screen is already null");
-    }
-
-    if (thisApp->vkInstance != nullptr) {
-        vkDestroyInstance(thisApp->vkInstance, nullptr);
-        thisApp->vkInstance = nullptr;
-    } else {
-        LOGW("vkInstance is already null");
     }
 }

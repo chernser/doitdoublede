@@ -23,7 +23,7 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        appLifeCycle.cpp appLifeCycle.h
+        VulkanGraphics.cpp VulkanGraphics.h
         appUtils.cpp appUtils.h
         VulkanLogicDevice.cpp VulkanLogicDevice.h
         native-lib.cpp)

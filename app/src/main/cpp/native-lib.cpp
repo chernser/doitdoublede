@@ -12,34 +12,22 @@
 //#include <android/sensor.h>
 #include <android_native_app_glue.h>
 
-#include "appLifeCycle.h"
+#include "VulkanGraphics.h"
 #include "appUtils.h"
 
+class Application : public VulkanGraphics {
+public:
+    Application(ANativeWindow *nativeWindow) : VulkanGraphics(nativeWindow)
+    {
 
-application _app;
+    }
+
+};
 
 void android_main(struct android_app *app) {
-
     LOGI("Android main ");
 
-    {
-        AppInitializer initializer(app);
-        initializer.setApplicationName("DoItDoubleDe");
-        initializer.doInit();
-        _app.vkInstance = initializer.getVkInstance();
-        _app.vkPhysicalDevice = initializer.getVkPhyDevice();
-        _app.screen = initializer.getScreen();
-        _app.screenSurface = initializer.getScreenSurface();
-        LOGI("Initialization done");
-    }
-
-
-
-    {
-        AppTerminator terminator(app, &_app);
-        terminator.doTerminate();
-        LOGI("Termination done");
-    }
+    Application application(app->window);
 
     LOGI("Done, done");
     exit(0);

@@ -29,8 +29,10 @@ void android_main(struct android_app *app) {
         _app.vkInstance = initializer.getVkInstance();
         _app.vkPhysicalDevice = initializer.getVkPhyDevice();
         _app.screen = initializer.getScreen();
+        _app.screenSurface = initializer.getScreenSurface();
         LOGI("Initialization done");
     }
+
 
 
     {

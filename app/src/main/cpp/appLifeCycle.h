@@ -19,6 +19,8 @@ struct application {
 
     /** Main output logical device */
     VulkanLogicDevice *screen;
+
+    VkSurfaceKHR *screenSurface;
 };
 
 /**
@@ -39,10 +41,14 @@ public:
 
     VulkanLogicDevice *getScreen() { return screen; }
 
+    VkSurfaceKHR *getScreenSurface() { return screenSurface; }
+
 protected:
     void doSelectPhyDevice();
 
     void createLogicalDevices();
+
+    void createSurface();
 
 protected:
     struct android_app *app;
@@ -51,6 +57,7 @@ protected:
     VkInstance vkInstance;
     VkPhysicalDevice vkPhysicalDevice;
     VulkanLogicDevice *screen;
+    VkSurfaceKHR  *screenSurface;
 };
 
 class AppTerminator {

@@ -3,6 +3,7 @@
 //
 #include <android_native_app_glue.h>
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_android.h>
 #include <vector>
 
 #include "appUtils.h"
@@ -15,6 +16,9 @@ AppInitializer::AppInitializer(struct android_app *app) :
     appInfo.pEngineName = NULL;
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.apiVersion = VK_API_VERSION_1_0;
+
+    // For scaling up
+    ANativeWindow_setBuffersGeometry(app->window, 1024, 768, 0);
 }
 
 void AppInitializer::setApplicationName(const char *name) {
@@ -38,6 +42,7 @@ uint8_t AppInitializer::doInit() {
 
     doSelectPhyDevice();
     createLogicalDevices();
+    createSurface();
 
     return 0;
 }
@@ -85,12 +90,31 @@ void AppInitializer::createLogicalDevices() {
     }
 }
 
+void AppInitializer::createSurface() {
+
+    VkAndroidSurfaceCreateInfoKHR createInfoKHR;
+    createInfoKHR.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+    createInfoKHR.window = app->window;
+    createInfoKHR.pNext = nullptr;
+
+    if (vkCreateAndroidSurfaceKHR(this->vkInstance, &createInfoKHR, nullptr, screenSurface) != VK_SUCCESS) {
+        LOGW("Failed to create surface");
+        return;
+    }
+}
+
 AppTerminator::AppTerminator(android_app *androidApp, application *thisApp) :
         androidApp(androidApp), thisApp(thisApp) {
 
 }
 
 void AppTerminator::doTerminate() {
+    if (thisApp->screenSurface != nullptr) {
+        vkDestroySurfaceKHR(thisApp->vkInstance, *thisApp->screenSurface, nullptr);
+    } else {
+        LOGW("screen surface is already destroyed");
+    }
+
     if (thisApp->screen != nullptr) {
         delete thisApp->screen;
     } else {

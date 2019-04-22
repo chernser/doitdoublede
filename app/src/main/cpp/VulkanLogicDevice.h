@@ -26,6 +26,7 @@ public:
     VkQueue getGraphicsQueue(uint32_t index);
     VkQueue getComputeQueue(uint32_t index);
 
+    virtual ~VulkanLogicDevice();
 
 protected:
 

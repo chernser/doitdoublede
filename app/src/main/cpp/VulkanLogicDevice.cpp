@@ -107,3 +107,7 @@ uint8_t VulkanLogicDevice::loadQueueFamilyIndex() {
 
     return 0;
 }
+
+VulkanLogicDevice::~VulkanLogicDevice() {
+    vkDestroyDevice(this->device, nullptr);
+}

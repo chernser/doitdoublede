@@ -18,5 +18,5 @@ Goals for development:
     2. Implement isometric space rendering.
     3. Implement superior graphical effects with maximum performance.
     4. Use best optimisation techniques.
-    
+
 

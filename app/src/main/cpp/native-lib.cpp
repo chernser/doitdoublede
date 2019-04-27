@@ -29,6 +29,8 @@ void android_main(struct android_app *app) {
 
     Application application(app->window);
 
+
+
     LOGI("Done, done");
     exit(0);
 }

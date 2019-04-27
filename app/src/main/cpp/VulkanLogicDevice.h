@@ -5,6 +5,7 @@
 #ifndef DOITDOUBLEDE_APPVULKANUTILS_H
 #define DOITDOUBLEDE_APPVULKANUTILS_H
 
+#include <string>
 #include <vulkan/vulkan.h>
 
 #define QUEUE_FAMILY_FLAGS_SIZE 2
@@ -16,20 +17,17 @@ class VulkanLogicDevice {
 
 public:
 
-    VulkanLogicDevice(VkPhysicalDevice physicalDevice);
-
-    void setNumberOfGraphicsQueues(uint32_t count);
-    void setNumberOfComputeQueues(uint32_t count);
-
-    uint8_t createVkLogicalDevice();
+    VulkanLogicDevice(VkPhysicalDevice physicalDevice, uint32_t graphicsQueuesCount, uint32_t computeQueuesCount);
 
     VkQueue getGraphicsQueue(uint32_t index);
     VkQueue getComputeQueue(uint32_t index);
+
 
     virtual ~VulkanLogicDevice();
 
 protected:
 
+    uint8_t createVkLogicalDevice();
     void updateQueuesCount(uint32_t flagIndex, uint32_t count);
     uint8_t loadQueueFamilyIndex();
 
@@ -42,6 +40,8 @@ protected:
     uint32_t *queueFamilyIndex;
     bool *queueFaimilyFlagsChanges;
     uint32_t *queueFamilyFlagsCount;
+
+
 };
 
 

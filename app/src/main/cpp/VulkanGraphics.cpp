@@ -47,16 +47,7 @@ VulkanGraphics::~VulkanGraphics() {
 }
 
 void VulkanGraphics::createLogicalDevices() {
-    screen = new VulkanLogicDevice(vkPhysicalDevice);
-    screen->setNumberOfComputeQueues(1);
-    screen->setNumberOfGraphicsQueues(1);
-
-    uint8_t result = screen->createVkLogicalDevice();
-    if (result != 0) {
-        LOGW("Failed to apply logic device changes: %d", result);
-        return;
-    }
-
+    screen = new VulkanLogicDevice(vkPhysicalDevice, 1, 1);
 }
 
 void VulkanGraphics::doSelectPhyDevice() {
@@ -81,9 +72,34 @@ void VulkanGraphics::doSelectPhyDevice() {
         VkPhysicalDeviceProperties props = {};
         vkGetPhysicalDeviceProperties(dev, &props);
         LOGI("DEV: %s %d", props.deviceName, props.apiVersion);
+
+
         // TODO: do proper device filtering here
         if (vkPhysicalDevice == VK_NULL_HANDLE) {
-            vkPhysicalDevice = dev;
+            uint32_t extCount;
+            if (vkEnumerateDeviceExtensionProperties(dev, nullptr, &extCount, nullptr) != VK_SUCCESS) {
+                LOGW("Failed to get device extensions");
+                continue;
+            }
+
+            std::vector<VkExtensionProperties> extensions(extCount);
+            vkEnumerateDeviceExtensionProperties(dev, nullptr, &extCount, extensions.data());
+
+
+            bool swapChainExtensionFound = false;
+            for (auto extension : extensions) {
+                if (strcasecmp(extension.extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME) == 0) {
+                    swapChainExtensionFound = true;
+                    break;
+                }
+            }
+
+            if (swapChainExtensionFound) {
+                vkPhysicalDevice = dev;
+                break;
+            } else {
+                LOGW("No swapchain extension found");
+            }
         }
     }
 }

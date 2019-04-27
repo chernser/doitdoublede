@@ -14,10 +14,22 @@
 
 #include "VulkanLogicDevice.h"
 
+
+
+
 /**
- * Represents Vulkan Graphics API
- * Actually is facade for any graphics things
- *
+ * Aux class to extract logic of swap chain creation and handling resize events
+ */
+class SwapChain {
+
+};
+
+/**
+ * Bootstrap Class that helps to do essential things
+ * Also is kind of proxy for Vulkan API.
+ * Intent of this class is to implement bootstrap logic + utility routines
+ * any Vulkan application might need.
+ * Doesn't implements render.
  *
  */
 class VulkanGraphics {
@@ -25,22 +37,6 @@ class VulkanGraphics {
 public:
 
     VulkanGraphics(ANativeWindow *nativeWindow);
-
-    void setVkInstance(VkInstance vkInstance) {
-        this->vkInstance = vkInstance;
-    }
-
-    void setVkPhysicalDevice(VkPhysicalDevice vkPhysicalDevice) {
-        this->vkPhysicalDevice = vkPhysicalDevice;
-    }
-
-    void setScreen(VulkanLogicDevice *screen) {
-        this->screen = screen;
-    }
-
-    void setScreenSurface(VkSurfaceKHR *screenSurface) {
-        this->screenSurface = screenSurface;
-    }
 
     VkInstance getVkInstance() {
         return vkInstance;

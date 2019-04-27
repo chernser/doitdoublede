@@ -9,16 +9,6 @@
 #include "VulkanLogicDevice.h"
 #include "appUtils.h"
 
-const uint32_t *QUEUE_FAMILY_FLAGS = new uint32_t[QUEUE_FAMILY_FLAGS_SIZE]{VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT};
-
-void VulkanLogicDevice::setNumberOfGraphicsQueues(uint32_t count) {
-    updateQueuesCount(QUEUE_GRAPHICS_FAMILY_INDEX, count);
-}
-
-void VulkanLogicDevice::setNumberOfComputeQueues(uint32_t count) {
-    updateQueuesCount(QUEUE_COMPUTE_FAMILY_INDEX, count);
-}
-
 uint8_t VulkanLogicDevice::createVkLogicalDevice() {
 
     uint8_t result = loadQueueFamilyIndex();
@@ -45,6 +35,9 @@ uint8_t VulkanLogicDevice::createVkLogicalDevice() {
     deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     deviceCreateInfo.queueCreateInfoCount = 1;
     deviceCreateInfo.pQueueCreateInfos = queuesToCreate.data();
+    std::vector<const char *> extensionNames = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+    deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t >(extensionNames.size());
+    deviceCreateInfo.ppEnabledExtensionNames = extensionNames.data();
 
     if (vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device) != VK_SUCCESS) {
         LOGW("Failed to create logic device");
@@ -60,14 +53,6 @@ VkQueue VulkanLogicDevice::getGraphicsQueue(uint32_t index) {
 
 VkQueue VulkanLogicDevice::getComputeQueue(uint32_t index) {
     return nullptr;
-}
-
-VulkanLogicDevice::VulkanLogicDevice(VkPhysicalDevice physicalDevice) :
-        physicalDevice(physicalDevice), queueFamilyFlagsCount(new uint32_t[QUEUE_FAMILY_FLAGS_SIZE]),
-        queueFaimilyFlagsChanges(new bool[QUEUE_FAMILY_FLAGS_SIZE]),
-        queueFamilyIndex(new uint32_t[QUEUE_FAMILY_FLAGS_SIZE]), queueFamilyIndexInitialized(false) {
-
-    memset(queueFamilyIndex, 0, sizeof(uint32_t) * QUEUE_FAMILY_FLAGS_SIZE);
 }
 
 void VulkanLogicDevice::updateQueuesCount(uint32_t flagIndex, uint32_t count) {
@@ -107,6 +92,22 @@ uint8_t VulkanLogicDevice::loadQueueFamilyIndex() {
 
     return 0;
 }
+
+
+VulkanLogicDevice::VulkanLogicDevice(VkPhysicalDevice physicalDevice, uint32_t graphicsQueuesCount,
+                                     uint32_t computeQueuesCount) :
+        physicalDevice(physicalDevice), queueFamilyFlagsCount(new uint32_t[QUEUE_FAMILY_FLAGS_SIZE]),
+        queueFaimilyFlagsChanges(new bool[QUEUE_FAMILY_FLAGS_SIZE]),
+        queueFamilyIndex(new uint32_t[QUEUE_FAMILY_FLAGS_SIZE]), queueFamilyIndexInitialized(false) {
+
+
+    updateQueuesCount(QUEUE_GRAPHICS_FAMILY_INDEX, graphicsQueuesCount);
+    updateQueuesCount(QUEUE_COMPUTE_FAMILY_INDEX, computeQueuesCount);
+    memset(queueFamilyIndex, 0, sizeof(uint32_t) * QUEUE_FAMILY_FLAGS_SIZE);
+
+    createVkLogicalDevice();
+}
+
 
 VulkanLogicDevice::~VulkanLogicDevice() {
     vkDestroyDevice(this->device, nullptr);

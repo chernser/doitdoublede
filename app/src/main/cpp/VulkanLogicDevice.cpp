@@ -19,7 +19,7 @@ uint8_t VulkanLogicDevice::createVkLogicalDevice() {
     float queuePriority = 1.0f;
     std::vector<VkDeviceQueueCreateInfo> queuesToCreate(0);
     for (uint32_t flagIndex = 0; flagIndex < QUEUE_FAMILY_FLAGS_SIZE; flagIndex++) {
-        if (!queueFaimilyFlagsChanges[flagIndex]) {
+        if (!queueFamilyFlagsChanges[flagIndex]) {
             continue;
         }
         VkDeviceQueueCreateInfo queueCreateInfo = {};
@@ -60,7 +60,7 @@ void VulkanLogicDevice::updateQueuesCount(uint32_t flagIndex, uint32_t count) {
             &queueFamilyFlagsCount[flagIndex];
     if (*oldValue != count) {
         *oldValue = count;
-        queueFaimilyFlagsChanges[flagIndex] = true;
+        queueFamilyFlagsChanges[flagIndex] = true;
         hasChanges = true;
     }
 }
@@ -97,7 +97,7 @@ uint8_t VulkanLogicDevice::loadQueueFamilyIndex() {
 VulkanLogicDevice::VulkanLogicDevice(VkPhysicalDevice physicalDevice, uint32_t graphicsQueuesCount,
                                      uint32_t computeQueuesCount) :
         physicalDevice(physicalDevice), queueFamilyFlagsCount(new uint32_t[QUEUE_FAMILY_FLAGS_SIZE]),
-        queueFaimilyFlagsChanges(new bool[QUEUE_FAMILY_FLAGS_SIZE]),
+        queueFamilyFlagsChanges(new bool[QUEUE_FAMILY_FLAGS_SIZE]),
         queueFamilyIndex(new uint32_t[QUEUE_FAMILY_FLAGS_SIZE]), queueFamilyIndexInitialized(false) {
 
 
@@ -111,4 +111,12 @@ VulkanLogicDevice::VulkanLogicDevice(VkPhysicalDevice physicalDevice, uint32_t g
 
 VulkanLogicDevice::~VulkanLogicDevice() {
     vkDestroyDevice(this->device, nullptr);
+}
+
+VkPhysicalDevice  VulkanLogicDevice::getPhysicalDevice() const {
+    return physicalDevice;
+}
+
+VkDevice VulkanLogicDevice::getDevice() const {
+    return device;
 }

@@ -23,9 +23,10 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
+        VulkanLogicDevice.cpp VulkanLogicDevice.h
+        VulkanSwapChain.cpp VulkanSwapChain.h
         VulkanGraphics.cpp VulkanGraphics.h
         appUtils.cpp appUtils.h
-        VulkanLogicDevice.cpp VulkanLogicDevice.h
         native-lib.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a

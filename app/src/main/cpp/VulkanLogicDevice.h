@@ -22,6 +22,9 @@ public:
     VkQueue getGraphicsQueue(uint32_t index);
     VkQueue getComputeQueue(uint32_t index);
 
+    VkPhysicalDevice getPhysicalDevice() const;
+
+    VkDevice getDevice() const;
 
     virtual ~VulkanLogicDevice();
 
@@ -38,7 +41,7 @@ protected:
     VkDevice device;
 
     uint32_t *queueFamilyIndex;
-    bool *queueFaimilyFlagsChanges;
+    bool *queueFamilyFlagsChanges;
     uint32_t *queueFamilyFlagsCount;
 
 

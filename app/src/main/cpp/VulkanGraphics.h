@@ -67,11 +67,12 @@ private:
     // Native platform
     ANativeWindow *nativeWindow;
 
+    /** Hardware and library specific. Useful while init*/
     VkApplicationInfo appInfo;
     VkInstance vkInstance;
     VkPhysicalDevice vkPhysicalDevice;
 
-    /** Main output logical device */
+    /** Main output and logical device. Used after rendering */
     VulkanLogicDevice *screen;
     VkSurfaceKHR *screenSurface;
 };

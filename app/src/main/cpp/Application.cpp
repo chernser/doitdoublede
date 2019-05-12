@@ -34,23 +34,30 @@ void Application::onSaveState() {
 }
 
 void Application::onPaused() {
-
+    this->isPaused = true;
 }
 
 void Application::onResumed() {
-
+    this->isPaused = false;
+    graphics->createLogicalDevices();
 }
 
 void Application::onWindowInit() {
 
+    if (isPaused) {
+        // At this point user sees snapshot in applications preview.
+    } else {
+        //graphics->createSurface(androidApp->window);
+    }
 }
 
 void Application::onGainedFocus() {
-
+    this->hasFocus = true;
+    // finalize initialization
 }
 
 void Application::onLostFocus() {
-
+    this->hasFocus = false;
 }
 
 void Application::onWindowTerm() {

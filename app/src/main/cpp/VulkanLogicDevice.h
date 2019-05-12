@@ -13,6 +13,11 @@
 #define QUEUE_COMPUTE_FAMILY_INDEX 1
 
 
+struct VulkanLogicDeviceState {
+    VkPhysicalDevice physicalDevice;
+    VkDevice vkDevice;
+};
+
 class VulkanLogicDevice {
 
 public:
@@ -25,6 +30,8 @@ public:
     VkPhysicalDevice getPhysicalDevice() const;
 
     VkDevice getDevice() const;
+
+    size_t stateSnapShot(VulkanLogicDeviceState *outState);
 
     virtual ~VulkanLogicDevice();
 

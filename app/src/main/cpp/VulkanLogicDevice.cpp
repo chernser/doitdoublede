@@ -96,9 +96,11 @@ uint8_t VulkanLogicDevice::loadQueueFamilyIndex() {
 
 VulkanLogicDevice::VulkanLogicDevice(VkPhysicalDevice physicalDevice, uint32_t graphicsQueuesCount,
                                      uint32_t computeQueuesCount) :
-        physicalDevice(physicalDevice), queueFamilyFlagsCount(new uint32_t[QUEUE_FAMILY_FLAGS_SIZE]),
+        physicalDevice(physicalDevice),
+        queueFamilyFlagsCount(new uint32_t[QUEUE_FAMILY_FLAGS_SIZE]),
         queueFamilyFlagsChanges(new bool[QUEUE_FAMILY_FLAGS_SIZE]),
-        queueFamilyIndex(new uint32_t[QUEUE_FAMILY_FLAGS_SIZE]), queueFamilyIndexInitialized(false) {
+        queueFamilyIndex(new uint32_t[QUEUE_FAMILY_FLAGS_SIZE]),
+        queueFamilyIndexInitialized(false) {
 
 
     updateQueuesCount(QUEUE_GRAPHICS_FAMILY_INDEX, graphicsQueuesCount);
@@ -113,10 +115,16 @@ VulkanLogicDevice::~VulkanLogicDevice() {
     vkDestroyDevice(this->device, nullptr);
 }
 
-VkPhysicalDevice  VulkanLogicDevice::getPhysicalDevice() const {
+VkPhysicalDevice VulkanLogicDevice::getPhysicalDevice() const {
     return physicalDevice;
 }
 
 VkDevice VulkanLogicDevice::getDevice() const {
     return device;
+}
+
+size_t VulkanLogicDevice::stateSnapShot(VulkanLogicDeviceState *outState) {
+    outState->vkDevice = this->device;
+    outState->physicalDevice = this->physicalDevice;
+    return sizeof(VulkanLogicDeviceState);
 }

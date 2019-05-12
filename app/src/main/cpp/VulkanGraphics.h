@@ -16,6 +16,8 @@
 
 
 struct VulkanGraphicsState {
+    VkInstance vkInstance;
+    VulkanLogicDeviceState logicDeviceState;
 
 };
 
@@ -41,50 +43,31 @@ public:
 
     VulkanGraphics();
 
-    /**
-     * Does inital setup for native window.
-     *
-     * @param nativeWindow
-     */
-    void init(ANativeWindow *nativeWindow);
 
     VkInstance getVkInstance() {
         return vkInstance;
-    }
-
-    VkPhysicalDevice getVkPhysicalDevice() {
-        return vkPhysicalDevice;
     }
 
     VulkanLogicDevice *getScreen()  {
         return screen;
     }
 
-    VkSurfaceKHR *getScreenSurface()  {
-        return screenSurface;
-    }
+    VkPhysicalDevice findPhysicalDevice();
+
+    void createLogicalDevices();
+
+    VkSurfaceKHR createSurface(ANativeWindow *nativeWindow);
+
+    size_t stateSnapshot(VulkanGraphicsState *outState);
 
     virtual ~VulkanGraphics();
 
 private:
-    void doSelectPhyDevice();
-
-    void createLogicalDevices();
-
-    void createSurface();
 
 private:
-    // Native platform
-    ANativeWindow *nativeWindow;
-
-    /** Hardware and library specific. Useful while init*/
-    VkApplicationInfo appInfo;
     VkInstance vkInstance;
-    VkPhysicalDevice vkPhysicalDevice;
-
-    /** Main output and logical device. Used after rendering */
     VulkanLogicDevice *screen;
-    VkSurfaceKHR *screenSurface;
+
 };
 
 #endif //DOITDOUBLEDE_VKINITIALIZER_H

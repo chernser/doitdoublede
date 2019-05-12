@@ -60,6 +60,10 @@ private:
     std::shared_ptr<VulkanGraphics> graphics;
     std::unique_ptr<ApplicationState> appState;
 
+    bool isPaused = true;
+    bool hasFocus = false;
+
+
     android_app *androidApp;
 };
 

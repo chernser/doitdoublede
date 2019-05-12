@@ -15,6 +15,9 @@
 #include "VulkanLogicDevice.h"
 
 
+struct VulkanGraphicsState {
+
+};
 
 
 /**
@@ -36,7 +39,14 @@ class VulkanGraphics {
 
 public:
 
-    VulkanGraphics(ANativeWindow *nativeWindow);
+    VulkanGraphics();
+
+    /**
+     * Does inital setup for native window.
+     *
+     * @param nativeWindow
+     */
+    void init(ANativeWindow *nativeWindow);
 
     VkInstance getVkInstance() {
         return vkInstance;

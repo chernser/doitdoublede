@@ -22,8 +22,8 @@ void VulkanSwapChain::init() {
     VkSwapchainCreateInfoKHR createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     createInfo.minImageCount = 1;
-    createInfo.imageFormat = nullptr;
-    createInfo.imageColorSpace = nullptr;
+//    createInfo.imageFormat = nullptr;
+//    createInfo.imageColorSpace = nullptr;
     createInfo.presentMode = presentMode;
 
 

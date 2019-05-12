@@ -27,6 +27,7 @@ add_library( # Sets the name of the library.
         VulkanSwapChain.cpp VulkanSwapChain.h
         VulkanGraphics.cpp VulkanGraphics.h
         appUtils.cpp appUtils.h
+        Application.cpp Application.h
         native-lib.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a

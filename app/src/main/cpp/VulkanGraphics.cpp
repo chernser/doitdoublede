@@ -9,34 +9,14 @@
 #include "appUtils.h"
 #include "VulkanGraphics.h"
 
-VulkanGraphics::VulkanGraphics(ANativeWindow *nativeWindow) : nativeWindow(nativeWindow) {
+VulkanGraphics::VulkanGraphics() : nativeWindow(nullptr),
+    vkPhysicalDevice(nullptr) {
 
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.pEngineName = NULL;
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.apiVersion = VK_API_VERSION_1_0;
-
-    // For scaling up
-    ANativeWindow_setBuffersGeometry(nativeWindow, 1024, 768, 0);
-
-
-    VkInstanceCreateInfo createInfo = {};
-    memset((char *) &createInfo, 0, sizeof(VkInstanceCreateInfo));
-    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    createInfo.pApplicationInfo = &appInfo;
-
-
-    if (vkCreateInstance(&createInfo, nullptr, &vkInstance) != VK_SUCCESS) {
-        LOGW("Failed to create vulkan instance");
-        throw "Failed to create vulkan instance";
-    } else {
-        LOGI("Vulkan instance created");
-    };
-
-    doSelectPhyDevice();
-    createLogicalDevices();
-    createSurface();
 
 }
 
@@ -47,6 +27,7 @@ VulkanGraphics::~VulkanGraphics() {
 }
 
 void VulkanGraphics::createLogicalDevices() {
+    LOGI("creating logical device with physical device %x", vkPhysicalDevice);
     screen = new VulkanLogicDevice(vkPhysicalDevice, 1, 1);
 }
 
@@ -96,6 +77,7 @@ void VulkanGraphics::doSelectPhyDevice() {
 
             if (swapChainExtensionFound) {
                 vkPhysicalDevice = dev;
+                LOGI("physical device is selected: %x", vkPhysicalDevice);
                 break;
             } else {
                 LOGW("No swapchain extension found");
@@ -114,4 +96,29 @@ void VulkanGraphics::createSurface() {
         LOGW("Failed to create surface");
         return;
     }
+}
+
+void VulkanGraphics::init(ANativeWindow *nativeWindow) {
+    this->nativeWindow = nativeWindow;
+
+    // For scaling up
+    ANativeWindow_setBuffersGeometry(nativeWindow, 1024, 768, 0);
+
+
+    VkInstanceCreateInfo createInfo = {};
+    memset((char *) &createInfo, 0, sizeof(VkInstanceCreateInfo));
+    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pApplicationInfo = &appInfo;
+
+
+    if (vkCreateInstance(&createInfo, nullptr, &vkInstance) != VK_SUCCESS) {
+        LOGW("Failed to create vulkan instance");
+        throw "Failed to create vulkan instance";
+    } else {
+        LOGI("Vulkan instance created");
+    };
+
+    doSelectPhyDevice();
+    createLogicalDevices();
+    createSurface();
 }

@@ -9,6 +9,8 @@
 #include <tuple>
 
 #include "VulkanGraphics.h"
+#include "Render.h"
+#include "Scene.h"
 
 
 struct ApplicationState {
@@ -27,9 +29,7 @@ class Application {
 public:
     Application();
 
-
     void setAndroidApp(android_app *androidApp) { this->androidApp = androidApp; }
-
 
     void onSaveState();
 
@@ -47,6 +47,8 @@ public:
 
     void onWindowResize();
 
+    void onLoopEnd();
+
 private:
 
     /**
@@ -57,13 +59,16 @@ private:
     size_t stateSnapshot(ApplicationState *outState);
 
 private:
+    // aggregations
     std::shared_ptr<VulkanGraphics> graphics;
     std::unique_ptr<ApplicationState> appState;
+    std::unique_ptr<Render> render;
+    std::shared_ptr<Scene> scene;
 
     bool isPaused = true;
     bool hasFocus = false;
 
-
+    // native references
     android_app *androidApp;
 };
 

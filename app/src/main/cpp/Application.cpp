@@ -17,8 +17,10 @@ size_t Application::stateSnapshot(ApplicationState *outState) {
     return 0;
 }
 
-Application::Application() {
+Application::Application() : graphics(nullptr),
+                             render(nullptr) {
 
+    graphics = std::shared_ptr<VulkanGraphics>(new VulkanGraphics());
 }
 
 void Application::onSaveState() {
@@ -31,6 +33,8 @@ void Application::onSaveState() {
     } else {
         free(state);
     }
+    render = nullptr;
+    scene = nullptr;
 }
 
 void Application::onPaused() {
@@ -40,6 +44,8 @@ void Application::onPaused() {
 void Application::onResumed() {
     this->isPaused = false;
     graphics->createLogicalDevices();
+    // load state to scene
+    scene = std::shared_ptr<Scene>(new Scene());
 }
 
 void Application::onWindowInit() {
@@ -47,7 +53,8 @@ void Application::onWindowInit() {
     if (isPaused) {
         // At this point user sees snapshot in applications preview.
     } else {
-        //graphics->createSurface(androidApp->window);
+        auto surface = graphics->createSurface(androidApp->window);
+        render = std::unique_ptr<Render>(new Render(this->graphics, surface));
     }
 }
 
@@ -66,4 +73,11 @@ void Application::onWindowTerm() {
 
 void Application::onWindowResize() {
 
+}
+
+void Application::onLoopEnd() {
+
+    if (hasFocus) {
+        render->renderFrame((ARenderable *) scene.get());
+    }
 }

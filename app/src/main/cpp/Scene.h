@@ -5,6 +5,7 @@
 #ifndef DOITDOUBLEDE_SCENE_H
 #define DOITDOUBLEDE_SCENE_H
 
+#include "Render.h"
 
 /**
  * Presents game state
@@ -12,7 +13,7 @@
  * camera position, animation
  *
  */
-class Scene {
+class Scene : ARenderable {
 
 };
 
